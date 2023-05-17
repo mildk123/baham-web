@@ -1,6 +1,8 @@
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import datetime
+
 
 from baham.constants import COLOURS, TOWNS
 from baham.enum_types import VehicleType, VehicleStatus, UserType
@@ -47,6 +49,30 @@ class VehicleModel(models.Model):
                             help_text="Select the vehicle chassis type")
     # Sitting capacity
     capacity = models.PositiveSmallIntegerField(null=False, default=2)
+
+    is_voided = models.BooleanField(default=False)
+    date_voided = models.DateTimeField(null=True)
+    void_reason = models.TextField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_vehicle_models')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='updated_vehicle_models')
+    voided_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='voided_vehicle_models')
+
+
+    def void(self, reason):
+        self.is_voided = True
+        self.date_voided = datetime.now()
+        self.void_reason = reason
+        self.save()
+
+    def unvoid(self):
+        self.is_voided = False
+        self.date_voided = None
+        self.void_reason = None
+        self.save()
 
     class Meta:
         db_table = "baham_vehicle_model"

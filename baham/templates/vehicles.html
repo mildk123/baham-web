@@ -26,7 +26,7 @@
                     <td>0</td>
                     <td>
                         <button class="btn btn-warning">Edit</button>
-                        <button class="btn btn-danger" disabled="disabled">Delete</button>
+                        <button class="btn btn-danger" onclick="deleteBtn('{{vehicle.model_id}}')">Delete</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -34,6 +34,11 @@
         <a class="btn btn-success" href="{% url 'createvehicle' %}">Add yours</a>
     </div> <!-- /container -->
 
+    <script>
+        function deleteBtn (key){
+            location.pathname = `vehicle/${key}/void/`
+        }
+        </script>
 </main>
 
 {% include 'footer.html' %}
