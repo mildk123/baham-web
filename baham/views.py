@@ -22,7 +22,7 @@ def view_aboutus(request):
     }
     return HttpResponse(template.render(context, request))
 
-
+# ACTIVITY #3
 def view_vehicles(request):
     template = loader.get_template('vehicles.html')
     vehicles = VehicleModel.objects.all().filter(is_voided=False).order_by('vendor')
@@ -34,12 +34,18 @@ def view_vehicles(request):
 
 def vehicle_void(request, model_id):
     vehicle_model = VehicleModel.objects.get(model_id=model_id)
+    if not vehicle_model:
+        return HttpResponseBadRequest('Vehicle model not found!')
     reason = "DELETED BY USER"
-    vehicle_model.void(reason)
+    vehicle_model.void_reason = reason
+    vehicle_model.void()
     return HttpResponseRedirect(reverse('vehicles'))
 
 def vehicle_unvoid(request, model_id):
     vehicle_model = VehicleModel.objects.get(model_id=model_id)
+    if not vehicle_model:
+        return HttpResponseBadRequest('Vehicle model not found!')
+    vehicle_model.void_reason = ""
     vehicle_model.unvoid()
     return HttpResponseRedirect(reverse('vehicles'))
 
